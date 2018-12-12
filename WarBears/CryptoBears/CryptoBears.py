@@ -2,14 +2,15 @@ from iconservice import *
 
 TAG = 'CryptoBear'
 
+
 class BattleScoreInterface(InterfaceScore):
 
     @interface
     def enroll(self, _participant: Address, _nonce: int):
         pass
 
-class CryptoBear(IconScoreBase):
 
+class CryptoBear(IconScoreBase):
     _ZERO_ADDRESS = 'cx0000000000000000000000000000000000000000'
     _ONE_ICX = 1
     _TOKEN_LIST = 'token_list'
@@ -26,7 +27,7 @@ class CryptoBear(IconScoreBase):
     def Approval(self, _owner: Address, _approved: Address, _tokenId: int):
         pass
 
-    def __init__(self, db: IconScoreDatabase, _tokenId = None) -> None:
+    def __init__(self, db: IconScoreDatabase, _tokenId=None) -> None:
         super().__init__(db)
         self._bear_level = DictDB(self._BEAR_LEVEL, db, value_type=int)
         self._token_list = ArrayDB(self._TOKEN_LIST, db, value_type=int)
@@ -73,7 +74,6 @@ class CryptoBear(IconScoreBase):
             return self._token_approved[_tokenId]
         else:
             raise IconScoreException("getApproved : Can't find the token which has the value of _tokenId")
-
 
     @external
     def approve(self, _to: Address, _tokenId: int):
@@ -156,7 +156,7 @@ class CryptoBear(IconScoreBase):
     @payable
     @external
     def happyMeal(self, _index: int):
-        if self.msg.value < self._ONE_ICX :
+        if self.msg.value < self._ONE_ICX:
             revert("need at least 1 ICX to feed a CryptoBear")
         else:
             self.icx.send(self.msg.sender, self.msg.value - self._ONE_ICX)
