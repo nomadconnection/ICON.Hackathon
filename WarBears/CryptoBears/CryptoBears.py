@@ -30,10 +30,13 @@ class CryptoBear(IconScoreBase):
     def __init__(self, db: IconScoreDatabase, _tokenId=None) -> None:
         super().__init__(db)
         self._bear_level = DictDB(self._BEAR_LEVEL, db, value_type=int)
-        self._token_list = ArrayDB(self._TOKEN_LIST, db, value_type=int)
         self._token_owner = DictDB(self._TOKEN_OWNER, db, value_type=Address)
         self._token_id = DictDB(self._TOKEN_ID, db, value_type=str)
         self._token_approved = DictDB(self._TOKEN_APPROVED, db, value_type=Address)
+
+    @property
+    def _token_list(self) -> ArrayDB:
+        return ArrayDB(self._TOKEN_LIST, self.db, value_type=int)
 
     def on_install(self) -> None:
         super().on_install()
@@ -93,6 +96,7 @@ class CryptoBear(IconScoreBase):
 
     @external
     def transfer(self, _to: Address, _tokenId: int):
+
         if self._token_owner[_tokenId] != self.msg.sender:
             raise IconScoreException("transfer : sender does not own token")
 
@@ -108,6 +112,7 @@ class CryptoBear(IconScoreBase):
 
     @external
     def transferFrom(self, _from: Address, _to: Address, _tokenId: int):
+
         if self._token_owner[_tokenId] != _from:
             raise IconScoreException("transferFrom : _from does not own token")
 
@@ -150,8 +155,8 @@ class CryptoBear(IconScoreBase):
         if self._token_id[_address] == "":
             raise IconScoreException("_address has no token")
         else:
-            tokenIdList = list(json_loads(self._token_id[_address]))[index]
-            return tokenIdList
+            tokenId = list(json_loads(self._token_id[_address]))[index]
+            return tokenId
 
     @payable
     @external
@@ -162,7 +167,7 @@ class CryptoBear(IconScoreBase):
             self.icx.send(self.msg.sender, self.msg.value - self._ONE_ICX)
 
         tokenId = list(json_loads(self._token_id[self.msg.sender]))[_index]
-        if self._bear_level == 10:
+        if self._bear_level[tokenId] == 10:
             revert("Can grow up to MAX LEVEL 10")
         self._bear_level[tokenId] += 1
 
