@@ -28,7 +28,6 @@ class Battle(IconScoreBase):
 
     def __init__(self, db: IconScoreDatabase) -> None:
         super().__init__(db)
-        self._participant = ArrayDB(self._PARTICIPANT, db, value_type=Address)
         self._nonce = DictDB(self._PARTICIPANT, db, value_type=int)
         self._interface_score = VarDB(self._INTERFACE_SCORE, db, value_type=Address)
 
@@ -38,6 +37,10 @@ class Battle(IconScoreBase):
 
     def on_update(self) -> None:
         super().on_update()
+
+    @property
+    def _participant(self) -> ArrayDB:
+        return ArrayDB(self._PARTICIPANT, self.db, value_type=Address)
 
     @external(readonly=True)
     def name(self) -> str:
